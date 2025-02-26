@@ -94,7 +94,7 @@ export async function GET(req: BunRequest) {
 						.h2(
 							wave
 								.a(
-									{ href: "/#gettingStarted", id: "gettingStarted" },
+									{ href: "#gettingStarted", id: "gettingStarted" },
 									"Getting started",
 								)
 								.toString(),
@@ -118,7 +118,7 @@ export async function GET(req: BunRequest) {
 				})
 				.div({ style: "margin-top: 6rem;" }, (waveDiv) => {
 					waveDiv
-						.h2(wave.a({ href: "/#wave", id: "wave" }, "🌊 Wave").toString())
+						.h2(wave.a({ href: "#wave", id: "wave" }, "🌊 Wave").toString())
 						.p(
 							"Wave is a lightweight templating engine built on top of Bun. You can just do things.",
 						)
@@ -131,7 +131,7 @@ export async function GET(req: BunRequest) {
 				})
 				.div({ style: "margin-top: 6rem;" }, (kitDiv) => {
 					kitDiv
-						.h2(wave.a({ href: "/#kit", id: "kit" }, "🧰 Kit").toString())
+						.h2(wave.a({ href: "#kit", id: "kit" }, "🧰 Kit").toString())
 						.p("Kit is a web server library. Use it like:")
 						.div(
 							highlighter.codeToHtml(waveKitKitCode, {
