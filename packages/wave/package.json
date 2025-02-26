@@ -1,0 +1,26 @@
+{
+	"name": "@wavekit/wave",
+	"type": "module",
+	"version": "0.0.1",
+	"module": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		}
+	},
+	"files": ["dist"],
+	"scripts": {
+		"build": "bun run build:types && bun run build:code",
+		"build:code": "bun build src/index.ts --outdir ./dist",
+		"build:types": "tsc --emitDeclarationOnly",
+		"test": "bun test"
+	},
+	"peerDependencies": {
+		"typescript": "^5.7.3"
+	},
+	"devDependencies": {
+		"dedent": "1.5.1"
+	}
+}

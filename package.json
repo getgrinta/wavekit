@@ -1,0 +1,16 @@
+{
+	"name": "wavekit",
+	"private": true,
+	"scripts": {
+		"lint": "bunx --bun biome check .",
+		"format": "bunx --bun biome check --write --unsafe ."
+	},
+	"workspaces": ["packages/*", "apps/*"],
+	"devDependencies": {
+		"@biomejs/biome": "1.9.4",
+		"@types/bun": "1.2.3"
+	},
+	"peerDependencies": {
+		"typescript": "^5.7.3"
+	}
+}

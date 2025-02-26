@@ -1,0 +1,22 @@
+{
+	"name": "@wavekit/docs",
+	"type": "module",
+	"module": "dist/index.js",
+	"main": "dist/index.js",
+	"files": ["dist"],
+	"scripts": {
+		"dev": "bun run --hot src/index.ts",
+		"build": "bun src/index.ts"
+	},
+	"dependencies": {
+		"@wavekit/kit": "workspace:*",
+		"@wavekit/wave": "workspace:*",
+		"dedent": "^1.5.3"
+	},
+	"peerDependencies": {
+		"typescript": "^5.7.3"
+	},
+	"devDependencies": {
+		"shiki": "^3.0.0"
+	}
+}
