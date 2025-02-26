@@ -1,3 +1,3 @@
-import { ssgRender } from "@wavekit/kit"
+import { ssgRender } from "@wavekit/kit";
 
-ssgRender()
+ssgRender();
