@@ -112,7 +112,10 @@ const createElement = <T extends Attributes = Attributes>(
 				}
 				// In chaining context
 				const current = `<${tag}${attrs ? ` ${attrs}` : ""}>${content}</${tag}>`;
-				const newState = { current: current, siblings: [] };
+				const newState = {
+					current: elementState.current + current,
+					siblings: [],
+				};
 				const element = createElement<T>(
 					prop,
 					attrsOrChild,

@@ -1,6 +1,8 @@
 import { wave } from "@wavekit/wave";
 
-const Logo = wave.li((li) => li.a({ href: "/" }, "WaveKit"));
+const Logo = wave.li((li) =>
+	li.a({ href: "/", style: "font-weight: semibold;" }, "WaveKit"),
+);
 
 const NavItem = ({ href, label }: { href: string; label: string }) => {
 	return wave.li((li) =>

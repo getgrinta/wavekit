@@ -31,11 +31,12 @@ it("renders a template with boolean property", () => {
 });
 
 it("renders multiple parents", () => {
-	const component = wave.div("foo").div("bar").toString();
+	const component = wave.div("foo").div("bar").div("baz").toString();
 	expect(component).toEqual(
 		sanitize`
       <div>foo</div>
-      <div>bar</div>
+	  <div>bar</div>
+      <div>baz</div>
     `,
 	);
 });
