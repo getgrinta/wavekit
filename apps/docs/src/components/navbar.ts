@@ -10,12 +10,10 @@ const NavItem = ({ href, label }: { href: string; label: string }) => {
 
 export const Navbar = () =>
 	wave.nav((nav) => {
-		nav
-			.ul([Logo])
-			.ul([
-				NavItem({
-					href: "https://github.com/getgrinta/wavekit",
-					label: "GitHub",
-				}),
-			]);
+		nav.ul([Logo]).ul([
+			NavItem({
+				href: "https://github.com/getgrinta/wavekit",
+				label: "GitHub",
+			}),
+		]);
 	});

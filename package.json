@@ -2,7 +2,9 @@
 	"name": "wavekit",
 	"private": true,
 	"scripts": {
-		"build": "bun --filter \"*\" build",
+		"build": "bun run build:packages && bun run build:apps",
+		"build:packages": "bun run --filter \"./packages/*\" build",
+		"build:apps": "bun run --filter \"./apps/*\" build",
 		"lint": "bunx --bun biome check .",
 		"format": "bunx --bun biome check --write --unsafe ."
 	},
