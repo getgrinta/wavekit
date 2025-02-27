@@ -10,7 +10,6 @@
 		"allowJs": true,
 		"declaration": true,
 		"moduleResolution": "bundler",
-		"allowImportingTsExtensions": true,
 		"verbatimModuleSyntax": true,
 		"skipLibCheck": true,
 		"strict": true,

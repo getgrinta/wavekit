@@ -6,7 +6,8 @@
 	"files": ["dist"],
 	"scripts": {
 		"dev": "NODE_ENV=development bun run --hot src/index.ts",
-		"build": "NODE_ENV=production bun src/index.ts"
+		"build": "NODE_ENV=production bun src/index.ts",
+		"docs": "bunx typedoc"
 	},
 	"dependencies": {
 		"@wavekit/kit": "workspace:*",
@@ -17,6 +18,7 @@
 		"typescript": "^5.7.3"
 	},
 	"devDependencies": {
-		"shiki": "^3.0.0"
+		"shiki": "^3.0.0",
+		"typedoc": "^0.27.9"
 	}
 }

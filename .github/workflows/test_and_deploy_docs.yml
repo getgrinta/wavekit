@@ -20,6 +20,8 @@ jobs:
         run: bun install
       - name: Build
         run: bun run build
+      - name: Build TypeDoc
+        run: bun run docs
       - name: Upload static files as artifact
         uses: actions/upload-pages-artifact@v3
         with:

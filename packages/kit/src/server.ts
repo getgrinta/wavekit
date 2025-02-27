@@ -20,12 +20,15 @@ export async function buildRoutes({
 > {
 	const rawRoutes = Object.entries(routes);
 	const routesWithHandlers = rawRoutes.map(async ([path, handlerPath]) => {
-		return [path, await import(handlerPath)];
+		const handler = (await import(
+			handlerPath
+		)) as RouterTypes.RouteHandlerObject<string>;
+		return [path, handler];
 	});
 	return Object.fromEntries(await Promise.all(routesWithHandlers));
 }
 
-type CreateWaveKitProps = {
+export type CreateWaveKitProps = {
 	routesDir?: string | undefined;
 };
 
@@ -43,7 +46,7 @@ function sanitizeRoutePath(routePath: string) {
 	return addIndex ? `${routePath}index` : routePath;
 }
 
-type SsgRenderProps = {
+export type SsgRenderProps = {
 	routesDir?: string | undefined;
 	outDir?: string | undefined;
 };

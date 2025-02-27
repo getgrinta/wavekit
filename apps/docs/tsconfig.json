@@ -1,5 +1,9 @@
 {
-	"include": ["src/index.ts"],
+	"include": [
+		"src/index.ts",
+		"../../packages/kit/src/index.ts",
+		"../../packages/wave/src/index.ts"
+	],
 	"compilerOptions": {
 		"outDir": "dist",
 		"lib": ["ESNext"],

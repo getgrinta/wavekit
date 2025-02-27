@@ -1,3 +1,6 @@
+/**
+ * @module @wavekit/wave
+ */
 export {
 	wave,
 	buildWave,

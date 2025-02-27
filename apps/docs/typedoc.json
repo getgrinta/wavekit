@@ -1,0 +1,9 @@
+{
+	"$schema": "https://typedoc.org/schema.json",
+	"entryPointStrategy": "expand",
+	"entryPoints": [
+		"../../packages/kit/src/index.ts",
+		"../../packages/wave/src/index.ts"
+	],
+	"out": "build/docs"
+}
