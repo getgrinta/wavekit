@@ -7,4 +7,5 @@ export type {
 	SsgRenderProps,
 	CreateWaveKitProps,
 	WaveKitHandler,
+	WaveKitContext,
 } from "./server";

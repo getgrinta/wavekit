@@ -10,11 +10,13 @@ const defaultRoutesDir = isDev
 
 const defaultOutDir = path.join(process.cwd(), "build");
 
-type WaveKitContext = {
+export type WaveKitContext = {
 	req: BunRequest;
 	res: WaveKitResponse;
 	html: typeof WaveKitResponse.html;
 	json: typeof WaveKitResponse.json;
+	redirect: typeof WaveKitResponse.redirect;
+	store: Map<string, unknown>;
 };
 
 export type WaveKitHandler = (
@@ -53,8 +55,7 @@ export async function buildRoutes({
 					html: WaveKitResponse.html,
 					json: WaveKitResponse.json,
 					redirect: WaveKitResponse.redirect,
-					set: contextStore.set,
-					get: contextStore.get,
+					store: contextStore,
 				};
 				return methodHandler(context);
 			};

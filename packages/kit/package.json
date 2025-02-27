@@ -1,7 +1,7 @@
 {
 	"name": "@wavekit/kit",
 	"type": "module",
-	"version": "0.0.3",
+	"version": "0.0.4",
 	"module": "dist/index.js",
 	"types": "dist/index.d.ts",
 	"exports": {
