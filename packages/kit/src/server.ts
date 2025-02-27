@@ -1,5 +1,6 @@
 import path from "node:path";
-import type { RouterTypes } from "bun";
+import type { BunRequest, RouterTypes, Server } from "bun";
+import { WaveKitResponse } from "./response";
 
 const isDev = process.env.NODE_ENV === "development";
 
@@ -8,6 +9,17 @@ const defaultRoutesDir = isDev
 	: path.join(process.cwd(), "build", "app");
 
 const defaultOutDir = path.join(process.cwd(), "build");
+
+type WaveKitContext = {
+	req: BunRequest;
+	res: WaveKitResponse;
+	html: typeof WaveKitResponse.html;
+	json: typeof WaveKitResponse.json;
+};
+
+export type WaveKitHandler = (
+	c: WaveKitContext,
+) => Response | Promise<Response>;
 
 type BuildRoutesProps = {
 	routes: Record<string, string>;
@@ -18,14 +30,43 @@ export async function buildRoutes({
 }: BuildRoutesProps): Promise<
 	Record<string, RouterTypes.RouteHandlerObject<string>>
 > {
+	const contextStore = new Map();
 	const rawRoutes = Object.entries(routes);
 	const routesWithHandlers = rawRoutes.map(async ([path, handlerPath]) => {
 		const handler = (await import(
 			handlerPath
 		)) as RouterTypes.RouteHandlerObject<string>;
-		return [path, handler];
+		const contextHandler: RouterTypes.RouteHandlerObject<string> = {};
+		for (const method of Object.keys(handler)) {
+			const methodHandler = handler[
+				method as RouterTypes.HTTPMethod
+			] as unknown as WaveKitHandler;
+			if (!methodHandler) return;
+			contextHandler[method as RouterTypes.HTTPMethod] = (
+				req: BunRequest,
+				server: Server,
+			) => {
+				const res = new WaveKitResponse();
+				const context = {
+					req,
+					res,
+					html: WaveKitResponse.html,
+					json: WaveKitResponse.json,
+					redirect: WaveKitResponse.redirect,
+					set: contextStore.set,
+					get: contextStore.get,
+				};
+				return methodHandler(context);
+			};
+		}
+		return [path, contextHandler];
 	});
-	return Object.fromEntries(await Promise.all(routesWithHandlers));
+	return Object.fromEntries(
+		(await Promise.all(routesWithHandlers)).filter(Boolean) as [
+			string,
+			RouterTypes.RouteHandlerObject<string>,
+		][],
+	);
 }
 
 export type CreateWaveKitProps = {

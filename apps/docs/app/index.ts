@@ -18,10 +18,10 @@ const waveKitServerCode = dedent`
 const waveKitAppCode = dedent`
 	// app/index.ts
 	import { wave } from "@wavekit/wave";
-	import { WaveKitResponse } from "@wavekit/kit";
+	import type { WaveKitHandler } from "@wavekit/kit";
 
-	export function GET(req: BunRequest) {
-		return WaveKitResponse.html(
+	export const GET: WaveKitHandler = (c) => {
+		return c.html(
 			wave.article({ class: "container mx-auto" }, (article) => {
 				article
 					.h1("WaveKit is awesome.")
@@ -33,7 +33,7 @@ const waveKitAppCode = dedent`
 `;
 
 const waveKitWaveCode = dedent`
-	// src/components/form.ts
+	// src/components/form.tsx
 	import { wave } from "@wavekit/wave";
 
 	export const SignUpForm = wave.form({
@@ -104,7 +104,7 @@ export async function GET(req: BunRequest) {
 						.code("bun add @wavekit/wave @wavekit/kit")
 						.p({ style: "margin-top: 1rem;" }, "Nightly release:")
 						.code(
-							"bun add https://pkg.pr.new/getgrinta/wavekit/wave https://pkg.pr.new/getgrinta/wavekit/kit",
+							"bun add https://pkg.pr.new/getgrinta/wavekit/wave@main https://pkg.pr.new/getgrinta/wavekit/kit@main",
 						)
 						.h3("Usage")
 						.div(
