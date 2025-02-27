@@ -102,6 +102,10 @@ export async function GET(req: BunRequest) {
 						.p("The kit is a web server library. Use it like:")
 						.h3("Install")
 						.code("bun add @wavekit/wave @wavekit/kit")
+						.p({ style: "margin-top: 1rem;" }, "Nightly release:")
+						.code(
+							"bun add https://pkg.pr.new/getgrinta/wavekit/wave https://pkg.pr.new/getgrinta/wavekit/kit",
+						)
 						.h3("Usage")
 						.div(
 							highlighter.codeToHtml(waveKitServerCode, {
