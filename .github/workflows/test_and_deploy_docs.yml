@@ -18,6 +18,8 @@ jobs:
       - uses: oven-sh/setup-bun@v2
       - name: Install Dependencies
         run: bun install
+      - name: Ru unit tests
+        run: bun run test
       - name: Build
         run: bun run build
       - name: Build TypeDoc

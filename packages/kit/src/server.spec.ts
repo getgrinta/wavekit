@@ -2,10 +2,10 @@ import { expect, it } from "bun:test";
 import path from "node:path";
 import { buildRoutes, createWaveKit } from "./server";
 
-const TEST_DIR = path.join(process.cwd(), "test", "app");
+const TEST_DIR = path.join(__dirname, "..", "test", "app");
 
 const FAKE_ROUTES = {
-	"/": path.join(TEST_DIR, "test.ts"),
+	"/": path.join(TEST_DIR, "index.test.ts"),
 };
 
 it("should prepare routes", async () => {
@@ -15,5 +15,5 @@ it("should prepare routes", async () => {
 
 it("should create wavekit config", async () => {
 	const routes = await createWaveKit({ routesDir: TEST_DIR });
-	expect(routes["/test"]).toHaveProperty("GET");
+	expect(routes["/index.test"]).toHaveProperty("GET");
 });

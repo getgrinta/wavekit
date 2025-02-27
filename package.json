@@ -6,6 +6,7 @@
 		"build:wave": "bun run --filter \"./packages/wave\" build",
 		"build:kit": "bun run --filter \"./packages/kit\" build",
 		"build:docs": "bun run --filter \"./apps/docs\" build",
+		"test": "bun test --coverage",
 		"lint": "bunx --bun biome check .",
 		"format": "bunx --bun biome check --write --unsafe ."
 	},
