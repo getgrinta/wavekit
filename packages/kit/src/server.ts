@@ -40,10 +40,12 @@ export type WaveKitHooks = {
 };
 
 async function createAssetsHandlers({
+	safeBase,
 	assetsDir,
-}: { assetsDir: string }): Promise<
-	Record<string, RouterTypes.RouteHandlerObject<string>>
-> {
+}: {
+	safeBase: string;
+	assetsDir: string;
+}): Promise<Record<string, RouterTypes.RouteHandlerObject<string>>> {
 	const files = await readdir(assetsDir, { recursive: true });
 	const iterableHandlers = files.map((filePath) => {
 		const file = Bun.file(path.join(assetsDir, filePath));
@@ -55,7 +57,7 @@ async function createAssetsHandlers({
 				});
 			},
 		};
-		return [fileName, handler];
+		return [safeBase + fileName, handler];
 	});
 	return Object.fromEntries(iterableHandlers);
 }
@@ -127,6 +129,7 @@ export async function createWaveKit({
 		return [safeBase + path, contextHandler];
 	});
 	const assetsHandlers = await createAssetsHandlers({
+		safeBase: safeBase,
 		assetsDir: publicDir ?? defaultPublicDir,
 	});
 	const filteredRoutes = Object.fromEntries(
