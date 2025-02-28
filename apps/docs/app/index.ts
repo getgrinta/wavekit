@@ -1,4 +1,4 @@
-import { type WaveKitHandler, WaveKitResponse } from "@wavekit/kit";
+import type { WaveKitHandler } from "@wavekit/kit";
 import { wave } from "@wavekit/wave";
 import dedent from "dedent";
 import { createHighlighter } from "shiki";
@@ -92,7 +92,7 @@ export const GET: WaveKitHandler = async (c) => {
 		themes: ["github-dark"],
 		langs: ["typescript"],
 	});
-	return WaveKitResponse.html(
+	return c.html(
 		Layout(
 			{ base: c.base },
 			wave
