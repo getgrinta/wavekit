@@ -1,4 +1,5 @@
 import { type Child, wave } from "@wavekit/wave";
+import dedent from "dedent";
 import { Footer } from "./footer";
 import { Navbar } from "./navbar";
 
@@ -12,10 +13,15 @@ export function Layout({ base }: { base: string }, slot: Child) {
 						name: "viewport",
 						content: "width=device-width, initial-scale=1.0",
 					})
-					.title("Wavekit")
+					.title("Wavekit - The salty hair of the web")
 					.link({
 						rel: "stylesheet",
-						href: "https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css",
+						href: "https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.cyan.min.css",
+					})
+					.link({
+						rel: "icon",
+						type: "image/svg+xml",
+						href: `${base}/favicon.svg`,
 					});
 			})
 			.body((body) => {
