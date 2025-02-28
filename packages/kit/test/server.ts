@@ -16,6 +16,7 @@ const hooks: WaveKitHooks = {
 
 createWaveKit({
 	routesDir: path.join(process.cwd(), "test", "app"),
+	publicDir: path.join(process.cwd(), "test", "public"),
 	hooks,
 }).then(({ routes }) => {
 	Bun.serve({ routes });

@@ -1,3 +1,4 @@
+import { readdir } from "node:fs/promises";
 import path from "node:path";
 import type { BunRequest, RouterTypes, Server } from "bun";
 import { WaveKitResponse } from "./response";
@@ -7,6 +8,8 @@ const isDev = process.env.NODE_ENV === "development";
 const defaultRoutesDir = isDev
 	? path.join(process.cwd(), "app")
 	: path.join(process.cwd(), "build", "app");
+
+const defaultPublicDir = path.join(process.cwd(), "public");
 
 const defaultOutDir = path.join(process.cwd(), "build");
 
@@ -36,15 +39,38 @@ export type WaveKitHooks = {
 	afterHandler?: (response: WaveKitResponse) => Promise<WaveKitResponse>;
 };
 
+async function createAssetsHandlers({
+	assetsDir,
+}: { assetsDir: string }): Promise<
+	Record<string, RouterTypes.RouteHandlerObject<string>>
+> {
+	const files = await readdir(assetsDir, { recursive: true });
+	const iterableHandlers = files.map((filePath) => {
+		const file = Bun.file(path.join(assetsDir, filePath));
+		const fileName = `/${path.basename(filePath)}`;
+		const handler = {
+			async GET() {
+				return new WaveKitResponse(file.stream(), {
+					headers: { "Content-Type": file.type },
+				});
+			},
+		};
+		return [fileName, handler];
+	});
+	return Object.fromEntries(iterableHandlers);
+}
+
 export type CreateWaveKitProps = {
 	base?: string | undefined;
 	routesDir?: string | undefined;
+	publicDir?: string | undefined;
 	hooks?: WaveKitHooks;
 };
 
 export async function createWaveKit({
 	base,
 	routesDir,
+	publicDir,
 	hooks,
 }: CreateWaveKitProps = {}): Promise<WaveKit> {
 	const safeBase = (base ?? "/") === "/" ? "" : (base ?? "");
@@ -100,6 +126,9 @@ export async function createWaveKit({
 		}
 		return [safeBase + path, contextHandler];
 	});
+	const assetsHandlers = await createAssetsHandlers({
+		assetsDir: publicDir ?? defaultPublicDir,
+	});
 	const filteredRoutes = Object.fromEntries(
 		(await Promise.all(routesWithHandlers)).filter(Boolean) as [
 			string,
@@ -107,7 +136,10 @@ export async function createWaveKit({
 		][],
 	);
 	return {
-		routes: filteredRoutes,
+		routes: {
+			...filteredRoutes,
+			...assetsHandlers,
+		},
 		store: contextStore,
 	};
 }
@@ -120,12 +152,14 @@ function sanitizeRoutePath(routePath: string) {
 export type SsgRenderProps = {
 	base?: string | undefined;
 	routesDir?: string | undefined;
+	publicDir?: string | undefined;
 	outDir?: string | undefined;
 };
 
 export async function ssgRender({
 	base,
 	routesDir,
+	publicDir,
 	outDir,
 }: SsgRenderProps = {}) {
 	const { routes } = await createWaveKit({ base, routesDir });
@@ -148,6 +182,16 @@ export async function ssgRender({
 			}
 		}),
 	);
+	// Copy assets from public directory to build folder
+	const publicFiles = await readdir(publicDir ?? defaultPublicDir, {
+		recursive: true,
+	});
+	for (const file of publicFiles) {
+		const sourcePath = path.join(publicDir ?? defaultPublicDir, file);
+		const destPath = path.join(outDir ?? defaultOutDir, base ?? "", file);
+		await Bun.write(destPath, Bun.file(sourcePath));
+	}
+
 	await server.stop();
 	console.log(
 		`Rendered ${renderedRoutes} route(s) to ${outDir ?? defaultOutDir}`,

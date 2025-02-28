@@ -99,7 +99,9 @@ export const GET: WaveKitHandler = async (c) => {
 				.div({ style: "margin-top: 6rem;" }, (heroDiv) => {
 					heroDiv
 						.h1("The minimalist Bun web framework.")
-						.p("WaveKit is a tiny framework built on top of Bun HTTP.")
+						.p(
+							"WaveKit is a tiny framework built on top of Bun HTTP. Bleeding edge.",
+						)
 						.h2("Features")
 						.ul((ul) => {
 							ul.li("Next.js style routing")

@@ -1,7 +1,14 @@
 import { wave } from "@wavekit/wave";
 
 const Logo = wave.li((li) =>
-	li.a({ href: "/wavekit", style: "font-weight: semibold;" }, "WaveKit"),
+	li.a({ href: "/wavekit", style: "font-weight: semibold;" }, (a) => {
+		a.img({
+			src: "/logo.svg",
+			alt: "Wavekit logo",
+			height: "48",
+			width: "128",
+		});
+	}),
 );
 
 const NavItem = ({
