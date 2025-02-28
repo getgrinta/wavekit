@@ -69,7 +69,7 @@ const waveKitKitCode = dedent`
 			if (!user) {
 				return c.json({ error: "Unauthorized" }, 401);
 			}
-			c.set("user", user);
+			c.store.set("user", user);
 		},
 	};
 
@@ -104,11 +104,11 @@ export const GET: WaveKitHandler = async (c) => {
 						)
 						.h2("Features")
 						.ul((ul) => {
-							ul.li("Next.js style routing")
+							ul.li("Next.js pages style routing")
+								.li("API inspired by Hono")
 								.li("Zero extra dependencies")
 								.li("Lightweight templating engine")
-								.li("Works flawlessly with HTMX and Alpine.js")
-								.li("API inspired by Hono, router works as in Next.js");
+								.li("Works flawlessly with HTMX and Alpine.js");
 						});
 				})
 				.div({ style: "margin-top: 6rem;" }, (gettingStartedDiv) => {
