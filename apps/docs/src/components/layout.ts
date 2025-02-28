@@ -2,7 +2,7 @@ import { type Child, wave } from "@wavekit/wave";
 import { Footer } from "./footer";
 import { Navbar } from "./navbar";
 
-export function Layout(slot: Child) {
+export function Layout({ base }: { base: string }, slot: Child) {
 	return wave.html({ lang: "en" }, (html) => {
 		html
 			.head((head) => {
@@ -20,7 +20,7 @@ export function Layout(slot: Child) {
 			})
 			.body((body) => {
 				body.main({ class: "container" }, [
-					Navbar(),
+					Navbar({ base }),
 					slot.toString(),
 					Footer(),
 				]);

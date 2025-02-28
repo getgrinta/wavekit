@@ -8,4 +8,5 @@ export type {
 	CreateWaveKitProps,
 	WaveKitHandler,
 	WaveKitContext,
+	WaveKitHooks,
 } from "./server";

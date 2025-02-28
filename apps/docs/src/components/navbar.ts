@@ -13,10 +13,10 @@ const NavItem = ({
 	return wave.li((li) => li.a({ href, target, rel }, label));
 };
 
-export const Navbar = () =>
+export const Navbar = ({ base }: { base: string }) =>
 	wave.nav((nav) => {
 		nav.ul([Logo]).ul([
-			NavItem({ href: "/wavekit/docs", label: "Docs" }),
+			NavItem({ href: `${base}/docs`, label: "Docs" }),
 			NavItem({
 				href: "https://github.com/getgrinta/wavekit",
 				label: "GitHub",

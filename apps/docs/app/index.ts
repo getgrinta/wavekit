@@ -1,6 +1,5 @@
-import { WaveKitResponse } from "@wavekit/kit";
+import { type WaveKitHandler, WaveKitResponse } from "@wavekit/kit";
 import { wave } from "@wavekit/wave";
-import type { BunRequest } from "bun";
 import dedent from "dedent";
 import { createHighlighter } from "shiki";
 import { Layout } from "../src/components/layout";
@@ -9,7 +8,7 @@ const waveKitServerCode = dedent`
 	// src/index.ts
 	import { createWaveKit } from "@wavekit/kit"
 
-	createWaveKit().then((routes) => {
+	createWaveKit().then(({ routes }) => {
 		console.log("Serving on http://localhost:3000")
 		Bun.serve({ port: 3000, routes })
 	})
@@ -57,25 +56,45 @@ const waveKitWaveCode = dedent`
 
 const waveKitKitCode = dedent`
 	// src/index.ts
-	import { createWaveKit, ssgRender } from "@wavekit/kit"
+	import { createWaveKit, ssgRender, type WaveKitHooks } from "@wavekit/kit";
+	import { findUserByToken } from "./src/auth";
+
+	const hooks: WaveKitHooks = {
+		async beforeHandler(c) {
+			const bearerToken = c.req.headers.get("Authorization")?.split(" ")?.[1];
+			if (!bearerToken) {
+				return c.json({ error: "Unauthorized" }, 401);
+			}
+			const user = await findUserByToken(bearerToken);
+			if (!user) {
+				return c.json({ error: "Unauthorized" }, 401);
+			}
+			c.set("user", user);
+		},
+	};
 
 	// Option 1: For serving
-	createWaveKit().then((routes) => {
-		console.log("Serving on http://localhost:3000")
-		Bun.serve({ port: 3000, routes })
-	})
+	createWaveKit({ hooks }).then(({ routes }) => {
+		console.log("Serving on http://localhost:3000");
+		Bun.serve({
+			port: 3000,
+			routes,
+			development: process.env.NODE_ENV === "development",
+		});
+	});
 
 	// Option 2: For static generation
 	ssgRender()
 `;
 
-export async function GET(req: BunRequest) {
+export const GET: WaveKitHandler = async (c) => {
 	const highlighter = await createHighlighter({
 		themes: ["github-dark"],
 		langs: ["typescript"],
 	});
 	return WaveKitResponse.html(
 		Layout(
+			{ base: c.base },
 			wave
 				.div({ style: "margin-top: 6rem;" }, (heroDiv) => {
 					heroDiv
@@ -86,7 +105,8 @@ export async function GET(req: BunRequest) {
 							ul.li("Next.js style routing")
 								.li("Zero extra dependencies")
 								.li("Lightweight templating engine")
-								.li("Works flawlessly with HTMX and Alpine.js");
+								.li("Works flawlessly with HTMX and Alpine.js")
+								.li("API inspired by Hono, router works as in Next.js");
 						});
 				})
 				.div({ style: "margin-top: 6rem;" }, (gettingStartedDiv) => {
@@ -146,4 +166,4 @@ export async function GET(req: BunRequest) {
 				}),
 		),
 	);
-}
+};

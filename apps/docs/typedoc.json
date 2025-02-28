@@ -5,5 +5,5 @@
 		"../../packages/kit/src/index.ts",
 		"../../packages/wave/src/index.ts"
 	],
-	"out": "build/docs"
+	"out": "build/wavekit/docs"
 }

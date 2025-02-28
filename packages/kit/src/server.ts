@@ -17,23 +17,44 @@ export type WaveKitContext = {
 	json: typeof WaveKitResponse.json;
 	redirect: typeof WaveKitResponse.redirect;
 	store: Map<string, unknown>;
+	base: string;
 };
 
 export type WaveKitHandler = (
 	c: WaveKitContext,
-) => Response | Promise<Response>;
+) => WaveKitResponse | Promise<WaveKitResponse>;
 
-type BuildRoutesProps = {
-	routes: Record<string, string>;
+export type WaveKit = {
+	routes: Record<string, RouterTypes.RouteHandlerObject<string>>;
+	store: Map<string, unknown>;
 };
 
-export async function buildRoutes({
-	routes,
-}: BuildRoutesProps): Promise<
-	Record<string, RouterTypes.RouteHandlerObject<string>>
-> {
+export type WaveKitHooks = {
+	beforeHandler?: (
+		c: WaveKitContext,
+	) => Promise<WaveKitContext | WaveKitResponse>;
+	afterHandler?: (response: WaveKitResponse) => Promise<WaveKitResponse>;
+};
+
+export type CreateWaveKitProps = {
+	base?: string | undefined;
+	routesDir?: string | undefined;
+	hooks?: WaveKitHooks;
+};
+
+export async function createWaveKit({
+	base,
+	routesDir,
+	hooks,
+}: CreateWaveKitProps = {}): Promise<WaveKit> {
+	const safeBase = (base ?? "/") === "/" ? "" : (base ?? "");
+	const router = new Bun.FileSystemRouter({
+		style: "nextjs",
+		dir: routesDir ?? defaultRoutesDir,
+		assetPrefix: "_public",
+	});
 	const contextStore = new Map();
-	const rawRoutes = Object.entries(routes);
+	const rawRoutes = Object.entries(router.routes);
 	const routesWithHandlers = rawRoutes.map(async ([path, handlerPath]) => {
 		const handler = (await import(
 			handlerPath
@@ -44,43 +65,51 @@ export async function buildRoutes({
 				method as RouterTypes.HTTPMethod
 			] as unknown as WaveKitHandler;
 			if (!methodHandler) return;
-			contextHandler[method as RouterTypes.HTTPMethod] = (
+			contextHandler[method as RouterTypes.HTTPMethod] = async (
 				req: BunRequest,
 				server: Server,
 			) => {
 				const res = new WaveKitResponse();
-				const context = {
+				let context = {
 					req,
 					res,
 					html: WaveKitResponse.html,
 					json: WaveKitResponse.json,
 					redirect: WaveKitResponse.redirect,
 					store: contextStore,
+					base: safeBase,
 				};
-				return methodHandler(context);
+				let beforeHandlerResult: WaveKitResponse | WaveKitContext;
+				if (hooks?.beforeHandler) {
+					beforeHandlerResult = await hooks.beforeHandler(context);
+					if (beforeHandlerResult instanceof Response)
+						return beforeHandlerResult;
+					context = beforeHandlerResult as WaveKitContext;
+				}
+				let result: WaveKitResponse = new WaveKitResponse();
+				result = await methodHandler(context);
+				if (
+					hooks?.afterHandler &&
+					result &&
+					result instanceof WaveKitResponse
+				) {
+					result = await hooks.afterHandler(result);
+				}
+				return result;
 			};
 		}
-		return [path, contextHandler];
+		return [safeBase + path, contextHandler];
 	});
-	return Object.fromEntries(
+	const filteredRoutes = Object.fromEntries(
 		(await Promise.all(routesWithHandlers)).filter(Boolean) as [
 			string,
 			RouterTypes.RouteHandlerObject<string>,
 		][],
 	);
-}
-
-export type CreateWaveKitProps = {
-	routesDir?: string | undefined;
-};
-
-export async function createWaveKit({ routesDir }: CreateWaveKitProps = {}) {
-	const router = new Bun.FileSystemRouter({
-		style: "nextjs",
-		dir: routesDir ?? defaultRoutesDir,
-		assetPrefix: "_public",
-	});
-	return buildRoutes({ routes: router.routes });
+	return {
+		routes: filteredRoutes,
+		store: contextStore,
+	};
 }
 
 function sanitizeRoutePath(routePath: string) {
@@ -89,13 +118,19 @@ function sanitizeRoutePath(routePath: string) {
 }
 
 export type SsgRenderProps = {
+	base?: string | undefined;
 	routesDir?: string | undefined;
 	outDir?: string | undefined;
 };
 
-export async function ssgRender({ routesDir, outDir }: SsgRenderProps = {}) {
-	const routes = await createWaveKit({ routesDir });
+export async function ssgRender({
+	base,
+	routesDir,
+	outDir,
+}: SsgRenderProps = {}) {
+	const { routes } = await createWaveKit({ base, routesDir });
 	const server = Bun.serve({
+		port: 3000,
 		routes,
 	});
 	let renderedRoutes = 0;
